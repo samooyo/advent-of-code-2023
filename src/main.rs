@@ -24,15 +24,15 @@ fn main() {
             Some(day) => run_day(day.parse::<usize>().unwrap()),
             None => {
                 println!("Please provide a day to run");
-           }
+            }
         },
     }
 }
 
-
 fn run_day(day: usize) {
     match day {
         1 => days::day01::run(),
+        4 => days::day04::run(),
         wrong => panic!("Wrong day provided : {}", wrong),
     }
 }
