@@ -1,5 +1,5 @@
 pub fn run() {
-    let mut scratchcards_array: [i32; 194] = [1; 194];
+    let mut scratchcards_array = [1u32; 194];
     let mut glob_points = 0;
 
     let my_str = include_str!("../../inputs/day04.txt");
@@ -23,7 +23,7 @@ pub fn run() {
 
         glob_points += points;
 
-        for i in 1..good_numbers + 1 {
+        for i in 1..=good_numbers {
             scratchcards_array[i + line_number] += scratchcards_array[line_number];
         }
     }
