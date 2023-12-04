@@ -32,6 +32,7 @@ fn main() {
 fn run_day(day: usize) {
     match day {
         1 => days::day01::run(),
+        2 => days::day02::run(),
         4 => days::day04::run(),
         wrong => panic!("Wrong day provided : {}", wrong),
     }
