@@ -1,41 +1,34 @@
-use std::fs::File;
-use std::io::{self, BufRead};
-use std::path::Path;
-
 pub fn run() {
+    let mut scratchcards_array: [i32; 194] = [1; 194];
     let mut glob_points = 0;
 
-    if let Ok(lines) = read_lines("./inputs/day04.txt") {
-        for line in lines.flatten() {
-            let mut split = line.split('|');
-            let mut full_card = split.next().unwrap().split(':');
-            full_card.next();
-            let clean_card = full_card.next().unwrap();
-            let full_win = split.next().unwrap();
+    let my_str = include_str!("../../inputs/day04.txt");
+    let lines = my_str.lines();
 
-            let card_numbers: Vec<&str> = clean_card.split_whitespace().collect();
-            let winning_numbers: Vec<&str> = full_win.split_whitespace().collect();
+    for (line_number, line) in lines.enumerate() {
+        let (full_card, full_win) = line.split_once('|').unwrap();
+        let (_, clean_card) = full_card.split_once(':').unwrap();
 
-            let mut points = 0;
-            for num in winning_numbers {
-                if card_numbers.contains(&num) {
-                    if points == 0 {
-                        points = 1;
-                    } else {
-                        points *= 2;
-                    }
-                }
+        let card_numbers: Vec<&str> = clean_card.split_whitespace().collect();
+        let winning_numbers: Vec<&str> = full_win.split_whitespace().collect();
+
+        let mut good_numbers = 0;
+        let mut points = 0;
+        for num in winning_numbers {
+            if card_numbers.contains(&num) {
+                good_numbers += 1;
+                points = if points == 0 { 1 } else { points * 2 };
             }
-            glob_points += points;
+        }
+
+        glob_points += points;
+
+        for i in 1..good_numbers + 1 {
+            scratchcards_array[i + line_number] += scratchcards_array[line_number];
         }
     }
-    println!("Day 4: {}", glob_points);
-}
+    let mut res = 0;
+    scratchcards_array.iter().for_each(|x| res += x);
 
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where
-    P: AsRef<Path>,
-{
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
+    println!("Day 4: part1 = {}, part2 = {}", glob_points, res);
 }
