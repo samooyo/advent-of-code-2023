@@ -1,10 +1,9 @@
 pub fn run() {
-    let my_str = include_str!("../../inputs/day05.txt");
-    let binding = my_str.to_string();
+    let input = include_str!("../../inputs/day05.txt");
 
     let mut almanac = vec![];
 
-    let (seeds, maps) = binding.split_once("\n\n").unwrap();
+    let (seeds, maps) = input.split_once("\n\n").unwrap();
     let seeds = seeds.replace("seeds:", "");
 
     let seeds_part1: Vec<usize> = seeds

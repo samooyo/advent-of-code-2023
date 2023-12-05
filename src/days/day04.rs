@@ -1,11 +1,10 @@
 pub fn run() {
+    let input = include_str!("../../inputs/day04.txt");
+
     let mut scratchcards_array = [1u32; 194];
     let mut glob_points = 0;
 
-    let my_str = include_str!("../../inputs/day04.txt");
-    let lines = my_str.lines();
-
-    for (line_number, line) in lines.enumerate() {
+    for (line_number, line) in input.lines().enumerate() {
         let (full_card, full_win) = line.split_once('|').unwrap();
         let (_, clean_card) = full_card.split_once(':').unwrap();
 
