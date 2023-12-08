@@ -25,7 +25,7 @@ pub fn run() {
             if res > distance {
                 wins += 1;
             }
-					}
+        }
         glob_wins *= wins;
     }
     println!("Day 6: part1 = {}", glob_wins)
