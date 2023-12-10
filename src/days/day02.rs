@@ -5,9 +5,7 @@ pub fn run() {
     let (mut total_p1, mut total_p2) = (0, 0);
 
     for line in input.lines() {
-        let mut blue = 0;
-        let mut green = 0;
-        let mut red = 0;
+        let (mut blue, mut green, mut red) = (0, 0, 0);
 
         let (game_number, data) = line.split_once(": ").unwrap();
         let game = data.split("; ");

@@ -1,8 +1,7 @@
 pub fn run() {
     let my_str = include_str!("../../inputs/day01.txt");
 
-    let mut count_p1 = 0;
-    let mut count_p2 = 0;
+    let (mut count_p1, mut count_p2) = (0, 0);
 
     let string_num = [
         "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
