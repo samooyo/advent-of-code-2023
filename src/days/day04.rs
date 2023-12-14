@@ -1,4 +1,4 @@
-use itertools::Itertools;
+// use itertools::Itertools;
 
 pub fn run() {
     let input = include_str!("../../inputs/day04.txt");
