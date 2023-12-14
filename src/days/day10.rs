@@ -1,5 +1,5 @@
 pub fn run() {
-    let input = include_str!("../../inputs/test.txt");
+    let input = include_str!("../../inputs/day10.txt");
 
     let map: Vec<&str> = input.split_whitespace().collect();
     let mut y = map.iter().position(|&x| x.contains('S')).unwrap();
@@ -95,16 +95,16 @@ pub fn run() {
                 } else if line.contains('F') && line.contains('7') {
                     println!("not inside special");
                 } else {
-										line.to_string().replace_range(i..i+1, "O");
+                    line.to_string().replace_range(i..i + 1, "O");
                     println!("{}", line);
                     println!("inside")
                 }
             }
         }
     }
-		for line in new_map.iter() {
-			println!("{}", line);
-		}
+    for line in new_map.iter() {
+        println!("{}", line);
+    }
     println!("Max distance = {}", steps / 2 + 1);
 }
 

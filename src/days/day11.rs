@@ -1,17 +1,31 @@
 pub fn run() {
     let input = include_str!("../../inputs/test.txt");
 
-    let mut new_map: Vec<String> = vec![];
-    let map: Vec<&str> = input.split_whitespace().collect();
-
-    map.iter().enumerate().for_each(|(i, line)| {
-        if line.contains('#') {
-            new_map.push(line.to_string());
-        } else {
-            new_map.push(line.to_string());
-            new_map.push(line.to_string());
+    let mut positions: Vec<(usize, usize)> = vec![];
+    let mut empty_horizontal = vec![];
+    let mut empty_vertical = vec![];
+    input.lines().enumerate().for_each(|(y, line)| {
+        if line.contains(|x: char| x.is_alphabetic()) {
+            empty_horizontal.push(y);
         }
+        line.chars().enumerate().for_each(|(x, c)| {
+            if c == '#' {
+                positions.push((x, y));
+            }
+        });
     });
 
-    new_map.iter().for_each(|line| println!("{}", line));
+    let lines = input.lines();
+    for (y, line) in lines.enumerate() {
+        if line.contains(|x: char| x.is_alphabetic()) {
+            empty_vertical.push(y);
+        }
+        line.chars().enumerate().for_each(|(x, c)| {
+            if c == '#' {
+                positions.push((x, y));
+            }
+        });
+    }
+
+    println!("{:?}", positions)
 }
