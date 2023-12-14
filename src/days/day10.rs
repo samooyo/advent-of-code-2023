@@ -79,6 +79,32 @@ pub fn run() {
         steps += 1;
     }
 
+    let mut new_map: Vec<&str> = map.clone();
+    for (j, line) in map.iter().enumerate() {
+        for (i, char) in line.chars().enumerate() {
+            if char == '.' {
+                let mut counter = 0;
+                for x in i + 1..line.len() {
+                    if "-|JFL7".contains(line.chars().nth(x).unwrap()) {
+                        counter += 1;
+                    }
+                }
+                println!("{}", counter);
+                if counter % 2 == 0 {
+                    println!("not inside");
+                } else if line.contains('F') && line.contains('7') {
+                    println!("not inside special");
+                } else {
+										line.to_string().replace_range(i..i+1, "O");
+                    println!("{}", line);
+                    println!("inside")
+                }
+            }
+        }
+    }
+		for line in new_map.iter() {
+			println!("{}", line);
+		}
     println!("Max distance = {}", steps / 2 + 1);
 }
 
@@ -95,3 +121,5 @@ fn find_beginning(map: Vec<&str>, x: usize, y: usize) -> (usize, usize) {
         panic!("Wrong map")
     }
 }
+
+fn inside_loop() {}
