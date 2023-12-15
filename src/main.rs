@@ -43,6 +43,7 @@ fn run_day(day: usize) {
         10 => days::day10::run(),
         11 => days::day11::run(),
         14 => days::day14::run(),
+        15 => days::day15::run(),
         wrong => panic!("Wrong day provided : {}", wrong),
     }
 }

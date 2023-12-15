@@ -122,4 +122,4 @@ fn find_beginning(map: Vec<&str>, x: usize, y: usize) -> (usize, usize) {
     }
 }
 
-fn inside_loop() {}
+// fn inside_loop() {}
