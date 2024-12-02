@@ -1,76 +1,30 @@
-pub fn run() {
-    let my_str = include_str!("../../inputs/day01.txt");
+use anyhow::{anyhow, Context, Result};
+use std::fs;
 
-    let (mut count_p1, mut count_p2) = (0, 0);
+pub fn run() -> Result<()> {
+    let input = fs::read_to_string("inputs/day01.txt").context("Reading file")?;
+    let mut left_locations: Vec<usize> = Vec::new();
+    let mut right_locations: Vec<usize> = Vec::new();
 
-    let string_num = [
-        "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
-    ];
+    for line in input.lines() {
+        let (left, right) = line
+            .split_once("   ")
+            .ok_or(anyhow!("Couldn't find separator"))
+            .context("Parsing line")?;
 
-    for line in my_str.lines() {
-        let first_digit_pos = line.find(|c: char| c.is_ascii_digit());
-        let second_digit_pos = line.rfind(|c: char| c.is_ascii_digit());
-
-        let (mut first_digit_p2, mut second_digit_p2) = (None, None);
-        let mut first_digit_pos_p2 = if first_digit_pos.is_some() {
-            first_digit_pos
-        } else {
-            None
-        };
-        let mut second_digit_pos_p2 = if second_digit_pos.is_some() {
-            second_digit_pos
-        } else {
-            None
-        };
-
-        for (i, number) in string_num.iter().enumerate() {
-            let pos = line.find(number);
-            if pos.is_some() {
-                if first_digit_pos_p2.is_none() || pos.unwrap() < first_digit_pos_p2.unwrap() {
-                    first_digit_p2 = Some(i + 1);
-                    first_digit_pos_p2 = pos;
-                }
-                if second_digit_pos_p2.is_none()
-                    || line.rfind(number).unwrap() > second_digit_pos_p2.unwrap()
-                {
-                    second_digit_p2 = Some(i + 1);
-                    second_digit_pos_p2 = line.rfind(number);
-                }
-            }
-        }
-
-        let mut res = 0;
-        let mut decimal = 0;
-        let mut unit = 0;
-
-        if first_digit_pos.is_some() {
-            decimal = (line.as_bytes()[first_digit_pos.unwrap()] as char)
-                .to_digit(10)
-                .unwrap();
-            unit = (line.as_bytes()[second_digit_pos.unwrap()] as char)
-                .to_digit(10)
-                .unwrap();
-
-            res = decimal * 10 + unit;
-
-            if first_digit_pos_p2 < first_digit_pos {
-                decimal = first_digit_p2.unwrap() as u32;
-            }
-            if second_digit_pos_p2 > second_digit_pos {
-                unit = second_digit_p2.unwrap() as u32;
-            }
-        } else {
-            if first_digit_p2.is_some() {
-                decimal = first_digit_p2.unwrap() as u32;
-            }
-            if second_digit_p2.is_some() {
-                unit = second_digit_p2.unwrap() as u32;
-            }
-        }
-
-        count_p1 += res;
-        count_p2 += decimal * 10 + unit;
+        left_locations.push(left.parse()?);
+        right_locations.push(right.parse()?);
     }
-    println!("And the answer for part1 is {}", count_p1);
-    println!("And the answer for part2 is {}", count_p2);
+
+    left_locations.sort();
+    right_locations.sort();
+
+    let tot: usize = left_locations
+        .iter()
+        .zip(right_locations.iter())
+        .map(|(left, right)| left.abs_diff(*right))
+        .sum();
+
+    println!("Part 1: {}", tot);
+    Ok(())
 }

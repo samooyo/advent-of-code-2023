@@ -1,5 +1,5 @@
+use anyhow::Result;
 use clap::{Parser, Subcommand};
-
 mod days;
 
 #[derive(Parser)]
@@ -16,7 +16,7 @@ enum Commands {
     },
 }
 
-fn main() {
+fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match &cli.command {
@@ -24,12 +24,13 @@ fn main() {
             Some(day) => run_day(day.parse::<usize>().unwrap()),
             None => {
                 println!("Please provide a day to run");
+                Ok(())
             }
         },
     }
 }
 
-fn run_day(day: usize) {
+fn run_day(day: usize) -> Result<()> {
     match day {
         1 => days::day01::run(),
 
