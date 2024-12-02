@@ -3,10 +3,6 @@ use itertools::Itertools;
 use std::fs;
 
 pub fn run() -> Result<()> {
-    part1()
-}
-
-fn part1() -> Result<()> {
     let input = fs::read_to_string("inputs/day01.txt").context("Reading file")?;
     let mut left_locations: Vec<usize> = Vec::new();
     let mut right_locations: Vec<usize> = Vec::new();
@@ -22,6 +18,12 @@ fn part1() -> Result<()> {
         right_locations.push(right.parse()?);
     }
 
+    part1(left_locations.clone(), right_locations.clone());
+    part2(left_locations, right_locations);
+    Ok(())
+}
+
+fn part1(mut left_locations: Vec<usize>, mut right_locations: Vec<usize>) {
     left_locations.sort();
     right_locations.sort();
 
@@ -32,5 +34,18 @@ fn part1() -> Result<()> {
         .sum();
 
     println!("Part 1: {}", tot);
-    Ok(())
+}
+
+fn part2(left_locations: Vec<usize>, right_locations: Vec<usize>) {
+    let mut tot = 0;
+
+    left_locations.iter().for_each(|l_loc| {
+        let nb = right_locations
+            .iter()
+            .filter(|&r_loc| r_loc == l_loc)
+            .count();
+        tot += nb * l_loc;
+    });
+
+    println!("Part 2: {}", tot);
 }
