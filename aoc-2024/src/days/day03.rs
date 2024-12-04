@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::{anyhow, Context, Result};
 use std::fs;
 use winnow::{
     ascii::digit1,
@@ -50,7 +50,9 @@ fn parse_input(input: &mut &str) -> PResult<Vec<ParseResult>> {
 pub fn run() -> Result<()> {
     let input = fs::read_to_string("inputs/day03.txt").context("Reading file")?;
 
-    let all_instructions = parse_input.parse(&input).unwrap();
+    let all_instructions = parse_input
+        .parse(&input)
+        .map_err(|e| anyhow!("Parsing error: {}", e))?;
 
     let mut tot = 0;
     for instr in all_instructions.iter() {
@@ -66,7 +68,7 @@ pub fn run() -> Result<()> {
         match instr {
             ParseResult::Mul { a, b } => {
                 if dododo {
-                    tot += a * b
+                    tot += a * b;
                 }
             }
             ParseResult::Do => dododo = true,
