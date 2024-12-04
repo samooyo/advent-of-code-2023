@@ -1,146 +1,71 @@
 use anyhow::{Context, Result};
 use std::fs;
 
-fn look_down(coordinates: &[Vec<char>], i: usize, j: usize) -> usize {
-    if (i + 3) >= coordinates.len() {
-        return 0;
+fn look_in_direction(coordinates: &[Vec<char>], i: usize, j: usize, di: isize, dj: isize) -> usize {
+    let mas = ['M', 'A', 'S'];
+    for (step, expected_char) in mas.iter().enumerate() {
+        let ni = i as isize + (step as isize + 1) * di;
+        let nj = j as isize + (step as isize + 1) * dj;
+        if ni < 0
+            || nj < 0
+            || ni as usize >= coordinates.len()
+            || nj as usize >= coordinates[0].len()
+            || coordinates[ni as usize][nj as usize] != *expected_char
+        {
+            return 0;
+        }
     }
-    if coordinates[i + 1][j] == 'M' && coordinates[i + 2][j] == 'A' && coordinates[i + 3][j] == 'S'
-    {
-        return 1;
-    }
-
-    0
+    1
 }
 
-fn look_up(coordinates: &[Vec<char>], i: usize, j: usize) -> usize {
-    if i < 3 {
-        return 0;
-    }
-    if coordinates[i - 1][j] == 'M' && coordinates[i - 2][j] == 'A' && coordinates[i - 3][j] == 'S'
-    {
-        return 1;
-    }
+fn search_xmas(coordinates: &[Vec<char>], i: usize, j: usize) -> usize {
+    let directions = [
+        (1, 0),   // Down
+        (-1, 0),  // Up
+        (0, 1),   // Right
+        (0, -1),  // Left
+        (1, 1),   // Down-right
+        (1, -1),  // Down-left
+        (-1, 1),  // Up-right
+        (-1, -1), // Up-left
+    ];
 
-    0
+    directions
+        .iter()
+        .map(|&(di, dj)| look_in_direction(coordinates, i, j, di, dj))
+        .sum()
 }
 
-fn look_right(coordinates: &[Vec<char>], i: usize, j: usize) -> usize {
-    if (j + 3) >= coordinates[i].len() {
-        return 0;
-    }
-    if coordinates[i][j + 1] == 'M' && coordinates[i][j + 2] == 'A' && coordinates[i][j + 3] == 'S'
-    {
-        return 1;
+fn search_x_mas(coordinates: &[Vec<char>], i: usize, j: usize) -> bool {
+    if i < 1 || j < 1 || i >= coordinates.len() - 1 || j >= coordinates[0].len() - 1 {
+        return false;
     }
 
-    0
-}
+    let diagonal_1 = (coordinates[i - 1][j - 1], coordinates[i + 1][j + 1]) == ('M', 'S')
+        || (coordinates[i - 1][j - 1], coordinates[i + 1][j + 1]) == ('S', 'M');
+    let diagonal_2 = (coordinates[i - 1][j + 1], coordinates[i + 1][j - 1]) == ('M', 'S')
+        || (coordinates[i - 1][j + 1], coordinates[i + 1][j - 1]) == ('S', 'M');
 
-fn look_left(coordinates: &[Vec<char>], i: usize, j: usize) -> usize {
-    if j < 3 {
-        return 0;
-    }
-    if coordinates[i][j - 1] == 'M' && coordinates[i][j - 2] == 'A' && coordinates[i][j - 3] == 'S'
-    {
-        return 1;
-    }
-
-    0
-}
-
-fn look_down_right(coordinates: &[Vec<char>], i: usize, j: usize) -> usize {
-    if (i + 3) >= coordinates.len() || (j + 3) >= coordinates[i].len() {
-        return 0;
-    }
-    if coordinates[i + 1][j + 1] == 'M'
-        && coordinates[i + 2][j + 2] == 'A'
-        && coordinates[i + 3][j + 3] == 'S'
-    {
-        return 1;
-    }
-
-    0
-}
-
-fn look_down_left(coordinates: &[Vec<char>], i: usize, j: usize) -> usize {
-    if (i + 3) >= coordinates.len() || j < 3 {
-        return 0;
-    }
-    if coordinates[i + 1][j - 1] == 'M'
-        && coordinates[i + 2][j - 2] == 'A'
-        && coordinates[i + 3][j - 3] == 'S'
-    {
-        return 1;
-    }
-
-    0
-}
-
-fn look_up_right(coordinates: &[Vec<char>], i: usize, j: usize) -> usize {
-    if i < 3 || (j + 3) >= coordinates[i].len() {
-        return 0;
-    }
-    if coordinates[i - 1][j + 1] == 'M'
-        && coordinates[i - 2][j + 2] == 'A'
-        && coordinates[i - 3][j + 3] == 'S'
-    {
-        return 1;
-    }
-
-    0
-}
-
-fn look_up_left(coordinates: &[Vec<char>], i: usize, j: usize) -> usize {
-    if i < 3 || j < 3 {
-        return 0;
-    }
-    if coordinates[i - 1][j - 1] == 'M'
-        && coordinates[i - 2][j - 2] == 'A'
-        && coordinates[i - 3][j - 3] == 'S'
-    {
-        return 1;
-    }
-
-    0
-}
-
-fn search_word(coordinates: &[Vec<char>], i: usize, j: usize) -> usize {
-    look_down(coordinates, i, j)
-        + look_up(coordinates, i, j)
-        + look_right(coordinates, i, j)
-        + look_left(coordinates, i, j)
-        + look_down_right(coordinates, i, j)
-        + look_down_left(coordinates, i, j)
-        + look_up_right(coordinates, i, j)
-        + look_up_left(coordinates, i, j)
+    diagonal_1 && diagonal_2
 }
 
 pub fn run() -> Result<()> {
     let input = fs::read_to_string("inputs/day04.txt").context("Reading file")?;
-    let mut coordinates: Vec<Vec<char>> = Vec::new();
-
-    for line in input.lines() {
-        let mut row: Vec<char> = Vec::new();
-        for c in line.chars() {
-            row.push(c);
-        }
-        coordinates.push(row);
-    }
+    let coordinates: Vec<Vec<char>> = input.lines().map(|line| line.chars().collect()).collect();
 
     let mut xmas_found = 0;
+    let mut x_mas_found = 0;
     for (i, row) in coordinates.iter().enumerate() {
         for (j, c) in row.iter().enumerate() {
-            if c == &'X' {
-                xmas_found += search_word(&coordinates, i, j)
-            } else {
-                print!(".");
+            if *c == 'X' {
+                xmas_found += search_xmas(&coordinates, i, j);
+            } else if *c == 'A' && search_x_mas(&coordinates, i, j) {
+                x_mas_found += 1;
             }
         }
-        println!();
     }
 
-    println!("XMAS found: {}", xmas_found);
-
+    println!("Part 1: {}", xmas_found);
+    println!("Part 2: {}", x_mas_found);
     Ok(())
 }
