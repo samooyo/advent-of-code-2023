@@ -1,9 +1,10 @@
 use anyhow::{Context, Result};
 use std::fs;
 
+const MAS: [char; 3] = ['M', 'A', 'S'];
+
 fn look_in_direction(coordinates: &[Vec<char>], i: usize, j: usize, di: isize, dj: isize) -> usize {
-    let mas = ['M', 'A', 'S'];
-    for (step, expected_char) in mas.iter().enumerate() {
+    for (step, expected_char) in MAS.iter().enumerate() {
         let ni = i as isize + (step as isize + 1) * di;
         let nj = j as isize + (step as isize + 1) * dj;
         if ni < 0
