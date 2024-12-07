@@ -54,7 +54,7 @@ fn move_in_dir(
 }
 
 pub fn run() -> Result<()> {
-    let input = fs::read_to_string("inputs/test.txt").context("Reading file")?;
+    let input = fs::read_to_string("inputs/day06.txt").context("Reading file")?;
 
     let mut coordinates: Vec<Vec<char>> =
         input.lines().map(|line| line.chars().collect()).collect();
