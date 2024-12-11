@@ -9,8 +9,7 @@ fn split_even_digit(num: usize) -> (usize, usize) {
 
 fn insert_or_incr(map: &mut HashMap<usize, usize>, item: usize, count: usize) {
     if map.contains_key(&item) {
-        let prev_count = map.get(&item).unwrap();
-        map.insert(item, count + prev_count);
+        map.insert(item, count + map.get(&item).unwrap());
     } else {
         map.insert(item, count);
     }
