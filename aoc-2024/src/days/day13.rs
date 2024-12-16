@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use std::fs;
+use std::{fs, str::FromStr};
 
 #[derive(Debug)]
 struct Play {
@@ -9,34 +9,38 @@ struct Play {
     prize_part2: (isize, isize),
 }
 
-impl Play {
-    fn from_string(s: &str) -> Self {
+impl FromStr for Play {
+    type Err = std::num::ParseIntError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut lines = s.lines();
         let parse_coordinates = |line: &str| {
             let mut coords = (0, 0);
             for word in line.split_whitespace() {
                 if word.starts_with('X') {
-                    coords.0 = word[2..word.len() - 1].parse().unwrap();
+                    coords.0 = word[2..word.len() - 1].parse()?;
                 } else if word.starts_with('Y') {
-                    coords.1 = word[2..].parse().unwrap();
+                    coords.1 = word[2..].parse()?;
                 }
             }
-            coords
+            Ok(coords)
         };
 
-        let button_a = parse_coordinates(lines.next().unwrap());
-        let button_b = parse_coordinates(lines.next().unwrap());
-        let prize = parse_coordinates(lines.next().unwrap());
+        let button_a = parse_coordinates(lines.next().unwrap())?;
+        let button_b = parse_coordinates(lines.next().unwrap())?;
+        let prize = parse_coordinates(lines.next().unwrap())?;
         let prize_part2 = (prize.0 + 10_000_000_000_000, prize.1 + 10_000_000_000_000);
 
-        Play {
+        Ok(Play {
             button_a,
             button_b,
             prize,
             prize_part2,
-        }
+        })
     }
+}
 
+impl Play {
     fn calculate_tokens(&self, prize: (isize, isize)) -> isize {
         let det = self.button_a.0 * self.button_b.1 - self.button_a.1 * self.button_b.0;
         if det == 0 {
@@ -59,7 +63,10 @@ impl Play {
 pub fn run() -> Result<()> {
     let input = fs::read_to_string("inputs/day13.txt").context("Reading file")?;
 
-    let plays: Vec<Play> = input.split("\n\n").map(Play::from_string).collect();
+    let plays: Vec<Play> = input
+        .split("\n\n")
+        .map(|s| s.parse::<Play>().unwrap())
+        .collect();
 
     let mut tokens = 0;
     let mut tokens_part2 = 0;
