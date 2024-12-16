@@ -1,4 +1,4 @@
-pub use indexmap::{IndexMap, IndexSet};
+pub use indexmap::IndexMap;
 
 pub fn run() {
     let input = include_str!("../../inputs/day15.txt");

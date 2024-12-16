@@ -37,8 +37,8 @@ pub fn run() {
     println!("Part 1 : {}, part 2 : {}", res, res_part2);
 }
 
-fn sub(nums: &Vec<i32>) -> Vec<i32> {
-    let mut new_nums = nums.clone();
+fn sub(nums: &[i32]) -> Vec<i32> {
+    let mut new_nums = nums.to_owned();
     for i in 1..nums.len() {
         new_nums[i] -= nums[i - 1];
     }

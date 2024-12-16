@@ -79,8 +79,8 @@ pub fn run() {
         steps += 1;
     }
 
-    let mut new_map: Vec<&str> = map.clone();
-    for (j, line) in map.iter().enumerate() {
+    let new_map: Vec<&str> = map.clone();
+    for line in map.iter() {
         for (i, char) in line.chars().enumerate() {
             if char == '.' {
                 let mut counter = 0;

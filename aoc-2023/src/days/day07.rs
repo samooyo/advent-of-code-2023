@@ -71,7 +71,7 @@ fn get_rank(cards: &str) -> Option<usize> {
 
 fn get_rank_p2(cards: String) -> usize {
     if !cards.contains('J') {
-        return get_rank(cards.as_str()).unwrap();
+        get_rank(cards.as_str()).unwrap()
     } else {
         let mut rank = 0;
         for card in ORDER_P2.chars() {
