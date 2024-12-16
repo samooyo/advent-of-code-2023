@@ -107,7 +107,7 @@ pub fn run() -> Result<()> {
     let mut regions: Vec<(usize, usize)> = Vec::new();
 
     for (y, coord_line) in coordinates.iter().enumerate() {
-        for (x, &plot) in coord_line.iter().enumerate() {
+        for (x, _) in coord_line.iter().enumerate() {
             if !plot_done.contains(&(x, y)) {
                 regions.push(parse_neighbors(coordinates.clone(), (x, y), &mut plot_done));
             }

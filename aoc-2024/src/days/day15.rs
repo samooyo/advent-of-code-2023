@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use std::{collections::HashSet, fs};
+use std::fs;
 
 #[derive(PartialEq)]
 enum Direction {
@@ -20,17 +20,8 @@ impl Direction {
     }
 }
 
-fn print_map(coordinates: &Vec<Vec<char>>) {
-    for line in coordinates {
-        for c in line {
-            print!("{}", c);
-        }
-        println!();
-    }
-}
-
 fn move_in_map(
-    coordinates: &mut Vec<Vec<char>>,
+    coordinates: &mut [Vec<char>],
     coord: (usize, usize),
     direction: Direction,
 ) -> (usize, usize) {
@@ -50,8 +41,6 @@ fn move_in_map(
         if coordinates[temp_y as usize][temp_x as usize] == '#' {
             return (coord.0, coord.1);
         }
-        println!("temp_x: {}, temp_y: {}", temp_x, temp_y);
-        println!("next_x: {}, next_y: {}", next_x, next_y);
         coordinates[temp_y as usize][temp_x as usize] = 'O';
         coordinates[next_y as usize][next_x as usize] = '.';
         return (next_x as usize, next_y as usize);
@@ -95,9 +84,6 @@ pub fn run() -> Result<()> {
             (pos_x, pos_y) = move_in_map(&mut coordinates, (pos_x, pos_y), Direction::Down);
             coordinates[pos_y][pos_x] = '@';
         }
-        println!("{}", instruction);
-        print_map(&coordinates);
-        println!();
     }
 
     let mut total = 0;
