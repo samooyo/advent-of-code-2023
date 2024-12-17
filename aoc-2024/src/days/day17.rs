@@ -107,7 +107,7 @@ pub fn run() -> Result<()> {
         result: String::new(),
     };
 
-    let (registers, instructions) = input.split_once("\n\nProgram: ").unwrap();
+    let (registers, str_instructions) = input.split_once("\n\nProgram: ").unwrap();
 
     registers.lines().for_each(|line| {
         let (register, value) = line.split_once(": ").unwrap();
@@ -119,18 +119,92 @@ pub fn run() -> Result<()> {
         }
     });
 
-    let instructions: Vec<i32> = instructions
+    let instructions: Vec<i32> = str_instructions
         .split(',')
         .map(|s| s.parse().unwrap())
         .collect();
 
+    let part_1 = solve(&mut registry.clone(), &instructions);
+    let part_2 = solve_part2(&registry, &instructions, str_instructions.to_string());
+
+    println!("Part 1: {}", part_1);
+    println!("Part 2: {}", part_2);
+    Ok(())
+}
+
+fn common_end(a: String, b: &str) -> usize {
+    a.chars()
+        .rev()
+        .zip(b.chars().rev())
+        .take_while(|(a, b)| a == b)
+        .count()
+}
+
+fn solve(registry: &mut Registry, instructions: &[i32]) -> String {
     while registry.pointer < instructions.len() {
         let opcode = Opcode::from_nb(instructions[registry.pointer] as usize);
         let operand = instructions[registry.pointer + 1] as usize;
-        opcode.execute(&mut registry, operand);
+        opcode.execute(registry, operand);
+    }
+    let mut res = registry.result.clone();
+    res.pop();
+    res
+}
+
+fn solve_part2(registry: &Registry, instructions: &[i32], str_instructions: String) -> usize {
+    let mut a = 500000000000000;
+    let mut tmp_registry = Registry {
+        a,
+        b: 0,
+        c: 0,
+        pointer: 0,
+        result: String::new(),
+    };
+
+    let mut default_common_end = common_end(
+        solve(&mut tmp_registry.clone(), instructions),
+        &str_instructions,
+    );
+
+    while tmp_registry.result != str_instructions {
+        let mut default_delta = 1;
+        let mut delta = default_delta;
+
+        loop {
+            if delta > a {
+                default_delta += 1;
+                delta = default_delta;
+            }
+
+            let mut test_higher = registry.clone();
+            test_higher.a = a + delta;
+            let mut test_lower = registry.clone();
+            if delta > a {
+                test_lower.a = 0;
+            } else {
+                test_lower.a = a - delta;
+            }
+
+            let res_higher = solve(&mut test_higher, instructions);
+            let res_lower = solve(&mut test_lower, instructions);
+            let common_ends_higher = common_end(res_higher.clone(), &str_instructions);
+            let common_ends_lower = common_end(res_lower.clone(), &str_instructions);
+
+            if common_ends_higher > default_common_end {
+                a += delta;
+                default_common_end = common_ends_higher;
+                tmp_registry.result = res_higher;
+                break;
+            } else if common_ends_lower > default_common_end {
+                a -= delta;
+                default_common_end = common_ends_lower;
+                tmp_registry.result = res_lower;
+                break;
+            } else {
+                delta *= 2;
+            }
+        }
     }
 
-    registry.result.pop();
-    println!("{}", registry.result);
-    Ok(())
+    a
 }
