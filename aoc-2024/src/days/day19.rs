@@ -1,18 +1,6 @@
 use anyhow::{Context, Result};
 use std::{collections::HashMap, fs};
 
-fn available_in_design(design: &str, available_towels: Vec<String>) -> Vec<String> {
-    let mut available_towels_in_design: Vec<String> = Vec::new();
-
-    for towel in available_towels {
-        if design.contains(&towel) {
-            available_towels_in_design.push(towel);
-        }
-    }
-
-    available_towels_in_design
-}
-
 fn nb_of_possible_design(
     design: &str,
     available_towels_in_design: &Vec<String>,
@@ -57,7 +45,6 @@ pub fn run() -> Result<()> {
     let mut part1 = 0;
     let mut part2 = 0;
     for design in designs {
-        // let available_towels_in_design = available_in_design(&design, available_towels.clone());
         let nb = nb_of_possible_design(&design, &available_towels, &mut known_designs);
         part1 += (nb > 0) as usize;
         part2 += nb;
